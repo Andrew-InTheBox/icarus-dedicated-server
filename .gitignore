@@ -1,0 +1,36 @@
+# Environment configuration - NEVER commit this!
+.env
+
+# Server configuration files with passwords
+config/ServerSettings.ini
+
+# Log files (but keep the directory structure)
+logs/*
+*.log
+!logs/.gitkeep
+
+# Server binaries and game files
+Icarus/
+steamapps/
+
+# SteamCMD (but keep directory structure)
+tools/steamcmd/*
+!tools/steamcmd/.gitkeep
+!tools/.gitkeep
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+
+# Windows specific
+Thumbs.db
+desktop.ini
+
+# Save data and user data
+Saved/
+*.sav
+
+# Temporary files
+temp/
+tmp/
