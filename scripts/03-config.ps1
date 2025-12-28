@@ -10,7 +10,11 @@ param(
   [int]$MaxPlayers,
   [string]$AdminPassword,
   [string]$ResumeProspect,
-  [string]$LastProspectName
+  [string]$LastProspectName,
+  [int]$ShutdownIfNotJoinedFor,
+  [int]$ShutdownIfEmptyFor,
+  [string]$AllowNonAdminsToLaunchProspects,
+  [string]$AllowNonAdminsToDeleteProspects
 )
 
 $ErrorActionPreference = 'Stop'
@@ -25,8 +29,22 @@ if (-not $PSBoundParameters.ContainsKey('MaxPlayers')) {
   $MaxPlayers = if ($env:MAX_PLAYERS) { [int]$env:MAX_PLAYERS } else { 8 }
 }
 if (-not $PSBoundParameters.ContainsKey('AdminPassword')) { $AdminPassword = $env:ADMIN_PASSWORD }
-if (-not $PSBoundParameters.ContainsKey('ResumeProspect')) { $ResumeProspect = $env:RESUME_PROSPECT }
+if (-not $PSBoundParameters.ContainsKey('ResumeProspect')) {
+  $ResumeProspect = if ($env:RESUME_PROSPECT) { $env:RESUME_PROSPECT } else { "True" }
+}
 if (-not $PSBoundParameters.ContainsKey('LastProspectName')) { $LastProspectName = $env:LAST_PROSPECT_NAME }
+if (-not $PSBoundParameters.ContainsKey('ShutdownIfNotJoinedFor')) {
+  $ShutdownIfNotJoinedFor = if ($env:SHUTDOWN_IF_NOT_JOINED_FOR) { [int]$env:SHUTDOWN_IF_NOT_JOINED_FOR } else { -1 }
+}
+if (-not $PSBoundParameters.ContainsKey('ShutdownIfEmptyFor')) {
+  $ShutdownIfEmptyFor = if ($env:SHUTDOWN_IF_EMPTY_FOR) { [int]$env:SHUTDOWN_IF_EMPTY_FOR } else { -1 }
+}
+if (-not $PSBoundParameters.ContainsKey('AllowNonAdminsToLaunchProspects')) {
+  $AllowNonAdminsToLaunchProspects = if ($env:ALLOW_NON_ADMINS_LAUNCH_PROSPECTS) { $env:ALLOW_NON_ADMINS_LAUNCH_PROSPECTS } else { "True" }
+}
+if (-not $PSBoundParameters.ContainsKey('AllowNonAdminsToDeleteProspects')) {
+  $AllowNonAdminsToDeleteProspects = if ($env:ALLOW_NON_ADMINS_DELETE_PROSPECTS) { $env:ALLOW_NON_ADMINS_DELETE_PROSPECTS } else { "False" }
+}
 
 $Root = (Resolve-Path "$PSScriptRoot\..").Path
 
@@ -42,12 +60,16 @@ $CfgFile = Join-Path $CfgDir "ServerSettings.ini"
 
 New-Item -ItemType Directory -Force -Path $CfgDir | Out-Null
 
-# NOTE: Section/key names are based on common UE ini style; adjust/extend as needed for your server behavior.
+# NOTE: Section/key names based on official ICARUS ServerSettings.ini format
 $ini = @"
-[ServerSettings]
+[/Script/Icarus.DedicatedServerSettings]
 JoinPassword=$JoinPassword
 MaxPlayers=$MaxPlayers
 AdminPassword=$AdminPassword
+ShutdownIfNotJoinedFor=$ShutdownIfNotJoinedFor
+ShutdownIfEmptyFor=$ShutdownIfEmptyFor
+AllowNonAdminsToLaunchProspects=$AllowNonAdminsToLaunchProspects
+AllowNonAdminsToDeleteProspects=$AllowNonAdminsToDeleteProspects
 ResumeProspect=$ResumeProspect
 LastProspectName=$LastProspectName
 "@
