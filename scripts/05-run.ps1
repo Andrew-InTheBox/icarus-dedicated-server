@@ -4,17 +4,29 @@ Start the ICARUS dedicated server (draft adapted from scripts.txt).
 Customize ServerName, ports, and optional UserDir.
 #>
 
+param(
+  [string]$ServerName,
+  [int]$GamePort,
+  [int]$QueryPort,
+  [string]$UserDir
+)
+
 $ErrorActionPreference = 'Stop'
 
 # Load environment variables from .env file
 . "$PSScriptRoot\Load-Env.ps1"
 
-param(
-  [string]$ServerName = $(if ($env:SERVER_NAME) { $env:SERVER_NAME } else { "My ICARUS Server" }),
-  [int]$GamePort  = $(if ($env:GAME_PORT) { [int]$env:GAME_PORT } else { 17777 }),
-  [int]$QueryPort = $(if ($env:QUERY_PORT) { [int]$env:QUERY_PORT } else { 27015 }),
-  [string]$UserDir = $env:USER_DIR
-)
+# Apply defaults from environment variables if parameters not provided
+if (-not $PSBoundParameters.ContainsKey('ServerName')) {
+  $ServerName = if ($env:SERVER_NAME) { $env:SERVER_NAME } else { "My ICARUS Server" }
+}
+if (-not $PSBoundParameters.ContainsKey('GamePort')) {
+  $GamePort = if ($env:GAME_PORT) { [int]$env:GAME_PORT } else { 17777 }
+}
+if (-not $PSBoundParameters.ContainsKey('QueryPort')) {
+  $QueryPort = if ($env:QUERY_PORT) { [int]$env:QUERY_PORT } else { 27015 }
+}
+if (-not $PSBoundParameters.ContainsKey('UserDir')) { $UserDir = $env:USER_DIR }
 
 $Root = (Resolve-Path "$PSScriptRoot\..").Path
 
@@ -22,13 +34,13 @@ $Exe = Join-Path $Root "Icarus\Binaries\Win64\IcarusServer-Win64-Shipping.exe"
 if (-not (Test-Path $Exe)) { throw "Server EXE not found at: $Exe" }
 
 $args = @(
-  "-SteamServerName=\"$ServerName\""
+  "-SteamServerName=`"$ServerName`""
   "-PORT=$GamePort"
   "-QueryPort=$QueryPort"
 )
 
 if (-not [string]::IsNullOrWhiteSpace($UserDir)) {
-  $args += "-UserDir=\"$UserDir\""
+  $args += "-UserDir=`"$UserDir`""
 }
 
 Write-Host "Starting: $Exe $($args -join ' ')"

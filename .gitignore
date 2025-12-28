@@ -11,7 +11,10 @@ logs/*
 
 # Server binaries and game files
 Icarus/
+Engine/
 steamapps/
+IcarusServer.exe
+Manifest_*.txt
 
 # SteamCMD (but keep directory structure)
 tools/steamcmd/*

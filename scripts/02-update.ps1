@@ -13,7 +13,7 @@ $AppId      = 2089300
 if (-not (Test-Path $SteamCmd)) { throw "steamcmd.exe not found at: $SteamCmd" }
 
 Write-Host "Updating server in $InstallDir"
-& $SteamCmd +login anonymous +force_install_dir "$InstallDir" +app_update $AppId +quit
+& $SteamCmd +force_install_dir "$InstallDir" +login anonymous  +app_update $AppId +quit
 Write-Host "Update complete."
 
 # Examples:

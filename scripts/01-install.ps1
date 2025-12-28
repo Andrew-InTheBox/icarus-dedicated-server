@@ -16,7 +16,7 @@ if (-not (Test-Path $SteamCmd)) {
 }
 
 Write-Host "Installing/validating ICARUS Dedicated Server to: $InstallDir"
-& $SteamCmd +login anonymous +force_install_dir "$InstallDir" +app_update $AppId validate +quit
+& $SteamCmd +force_install_dir "$InstallDir" +login anonymous +app_update 2089300 validate +quit
 Write-Host "Done."
 
 # Examples:
