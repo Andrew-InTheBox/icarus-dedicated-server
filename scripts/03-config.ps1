@@ -8,7 +8,9 @@ param(
   [string]$UserDir,
   [string]$JoinPassword,
   [int]$MaxPlayers,
-  [string]$AdminPassword
+  [string]$AdminPassword,
+  [string]$ResumeProspect,
+  [string]$LastProspectName
 )
 
 $ErrorActionPreference = 'Stop'
@@ -23,6 +25,8 @@ if (-not $PSBoundParameters.ContainsKey('MaxPlayers')) {
   $MaxPlayers = if ($env:MAX_PLAYERS) { [int]$env:MAX_PLAYERS } else { 8 }
 }
 if (-not $PSBoundParameters.ContainsKey('AdminPassword')) { $AdminPassword = $env:ADMIN_PASSWORD }
+if (-not $PSBoundParameters.ContainsKey('ResumeProspect')) { $ResumeProspect = $env:RESUME_PROSPECT }
+if (-not $PSBoundParameters.ContainsKey('LastProspectName')) { $LastProspectName = $env:LAST_PROSPECT_NAME }
 
 $Root = (Resolve-Path "$PSScriptRoot\..").Path
 
@@ -39,12 +43,13 @@ $CfgFile = Join-Path $CfgDir "ServerSettings.ini"
 New-Item -ItemType Directory -Force -Path $CfgDir | Out-Null
 
 # NOTE: Section/key names are based on common UE ini style; adjust/extend as needed for your server behavior.
-# Keep it simple: core access control + player cap.
 $ini = @"
 [ServerSettings]
 JoinPassword=$JoinPassword
 MaxPlayers=$MaxPlayers
 AdminPassword=$AdminPassword
+ResumeProspect=$ResumeProspect
+LastProspectName=$LastProspectName
 "@
 
 Set-Content -Path $CfgFile -Value $ini -Encoding UTF8
